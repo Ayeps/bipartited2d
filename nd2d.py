@@ -85,6 +85,7 @@ for Nd in Ndvariation:
     rateVariationD2d.append(throughPutD2d)
     rateVariationBoth.append(throughputCell + throughPutD2d)
 print("")
+pl.figure(2)
 pl.plot(Ndvariation, np.asarray(rateVariationCell) / 1e6)
 pl.plot(Ndvariation, np.asarray(rateVariationD2d) / 1e6)
 pl.plot(Ndvariation, np.asarray(rateVariationBoth) / 1e6)

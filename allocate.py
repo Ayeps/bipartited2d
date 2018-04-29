@@ -8,6 +8,7 @@ def cellAllocate(Nc, Nrb, Pc, bw, N0, msCh, preAv):
     assignmentRB = [-1 for x in range(Nrb)]
     assigned = []
     currentRates = np.asarray([0 for x in range(Nc)])
+    currentRatesRB = []
 
     lambdas = []
     rates = []
@@ -28,14 +29,14 @@ def cellAllocate(Nc, Nrb, Pc, bw, N0, msCh, preAv):
                 assigned.append(assignmentRB[i - 1])
         assignment[sortedLambdas[toAssign]].append(i)
         assignmentRB[i] = sortedLambdas[toAssign]
+        currentRatesRB.append(rates[sortedLambdas[toAssign]][i])
     for i in range(Nc):
         for y in assignment[i]:
-            #currentRates[i] += lambdast[i][y]
             currentRates[i] += rates[i][y]
         if(len(assignment[i]) == 0):
             currentRates[i] = 1
     gcBs = [msCh[assignmentRB[i]][i] for i in range(len(assignmentRB))]
-    return assignment, assignmentRB, gcBs, currentRates
+    return assignment, assignmentRB, gcBs, currentRates, currentRatesRB
 
 def d2dAllocate(lambda_matrix,maximum_rb_allowed):
     #if multiple resource blocks are allowed for d2d users then repeat the rows
