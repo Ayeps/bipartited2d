@@ -60,6 +60,10 @@ class draw(object):
         axis = fig.gca()
         axis.add_patch(patches.RegularPolygon((center[0], center[1]), 6, self.radius, orientation=(np.pi/2), fc=fclr, ec=''.join(eclr)))
 
+    def drawSquare(self, x, y, fig, fclr):
+        axis = fig.gca()
+        axis.add_patch(patches.RegularPolygon((x, y), 4, self.radius, orientation=(np.pi/4), fc=fclr))
+
     def drawHexSectored(self, ci, cj, fig, fclr):
         x = ci * np.cos(np.pi / 6)
         y = cj + (ci * np.sin(np.pi / 6))

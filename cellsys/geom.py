@@ -160,6 +160,21 @@ class geom(object):
             thePoint = (pr * np.cos(theta), pr * np.sin(theta))
         return thePoint
 
+    def getD2DInHex(self):
+        precision = 3
+        pr = np.sqrt( (self.radius-20) * (self.radius-20) * random.randint(0, 10 ** precision) / float(10 ** precision))
+        pr1 = pr - 10   # 10 is d2d distance
+        theta = 2 * np.pi * random.random()
+        thePoint = (pr * np.cos(theta), pr * np.sin(theta))
+        thePoint1 = (pr1 * np.cos(theta), pr1 * np.sin(theta))
+        while((pr < 10) or (not self.isContainedInHex((0, 0), thePoint))):
+            pr = np.sqrt( (self.radius-20) * (self.radius-20) * random.randint(0, 10 ** precision) / float(10 ** precision))
+            pr1 = pr - 10
+            theta = 2 * np.pi * random.random()
+            thePoint = (pr * np.cos(theta), pr * np.sin(theta))
+            thePoint1 = (pr1 * np.cos(theta), pr1 * np.sin(theta))
+        return thePoint,thePoint1
+
     def getRandomPointInSector(self):
         precision = 3
         pr = np.sqrt(self.radius * self.radius * random.randint(0, 10 ** precision) / float(10 ** precision))
