@@ -44,22 +44,17 @@ nRB = 25
 # max window
 RWindowSize = 100
 
+# D2D distance
+d2dDistance = 10
+
 brush = cs.draw(0.1)
 g = cs.geom(Rc)
-
-# # # # # # # # # # # # # # # # # # # ## # # # # # # # # # # # # # # # # # # # #
-# Take Cell users and D2D users in a cell
 
 cellUsers = []
 d2d_tx = []
 d2d_rx = []
 
 cellUsers = [g.getRandomPointInHex() for i in range(Nc)]
-
-for i in range(0, Nd):   # D2D Users
-    t,r = g.getD2DInHex()
-    d2d_tx.append(t)
-    d2d_rx.append(r)
 
 def valid(a):
     for i in range(0,len(a)):
@@ -69,7 +64,7 @@ def valid(a):
             a[i] = 0
     return a
 
-def initAllocate(msCh = [], preAv = []):
+def initAllocate(msCh, preAv):
     assignment = [[] for x in range(Nc)]
     assignmentRB = [-1 for x in range(nRB)]
     assigned = []
@@ -103,48 +98,58 @@ def initAllocate(msCh = [], preAv = []):
     gcBs = [msCh[assignmentRB[i]][i] for i in range(len(assignmentRB))]
     return assignment, assignmentRB, gcBs, currentRates
 
-# totalTime = 1800 * 1000
-totalTime = 200
-
-cellR = [1 for x in range(Nc)]
-d2dR = [1 for x in range(Nd)]
-
-cellRwindow = cs.meanwindow(cellR, RWindowSize)
-d2dRwindow = cs.meanwindow(d2dR, RWindowSize)
-
 rateVariationCell = []
 rateVariationD2d = []
 
-for i in range(totalTime):
-    gcB = getGcbMatrix(Nc, cellUsers, nRB)
-    alloc, allocRB, gcBs, rates = initAllocate(gcB, cellRwindow.get())
-    Rcell = cellRwindow.update(rates)
+for Nd in range(4, 22, 2):
+    for i in range(0, Nd):
+        t,r = g.getD2DInHex(d2dDistance)
+        d2d_tx.append(t)
+        d2d_rx.append(r)
 
-    rateVariationCell.append(np.sum(rates))
+    totalTime = 200
 
-    normize = 1
-    nor_rates = []
-    rates = []
-    g_dTB, g_dTdR, g_CdR = chGains(Nd, nRB, cellUsers, allocRB, d2d_tx, d2d_rx, Pc)
-    g_CB = np.asarray(gcBs)
-    for d in range(Nd):
-        P_dT =  (((Pc * g_CB) / (tSNR * g_dTB[d])) - (N0 / g_dTB[d]))
-        # Power of D2D transmitter for all RBs  (checking for all RB occupied by cell users)
-        P_dT = valid(P_dT)
-        #print(" A. Power that can be sent by d2d Txs", d, ": ", P_dT)
-        r = (1 + ((P_dT * g_dTdR) / (N0 + (Pc * g_CdR[d]))))
-        r_d2d = bw * np.log2(r)
-        r_d2dN = r_d2d / normize
-        # Rate achievable by D2D for all K s.
-        #print(" B. Rate achievable by D2D",d,": ", r_d2d)
-        #print("\n")
+    cellR = [1 for x in range(Nc)]
+    d2dR = [1 for x in range(Nd)]
 
-        nor_rates.append(list(r_d2dN))
-        rates.append(list(r_d2d))
-    lambdas = []
-    for ratelist,Rd2d in zip(rates, d2dRwindow.get()):
-        lambdas.append(ratelist / Rd2d)
-    alloc = allocate_d2d(lambdas, 1)
-    d2dRates = [rates[x[1][0]][x[1][1]] for x in alloc]
-    d2dRwindow.update(d2dRates)
-    print(alloc)
+    cellRwindow = cs.meanwindow(cellR, RWindowSize)
+    d2dRwindow = cs.meanwindow(d2dR, RWindowSize)
+
+    tempRateCell = []
+    tempRateD2d = []
+
+    for i in range(totalTime):
+        gcB = getGcbMatrix(Nc, cellUsers, nRB)
+        alloc, allocRB, gcBs, rates = initAllocate(gcB, cellRwindow.get())
+        Rcell = cellRwindow.update(rates)
+
+        tempRateCell.append(np.sum(rates))
+
+        rates = []
+        g_dTB, g_dTdR, g_CdR = chGains(Nd, nRB, cellUsers, allocRB, d2d_tx, d2d_rx, Pc, d2dDistance)
+        g_CB = np.asarray(gcBs)
+        for d in range(Nd):
+            P_dT =  (((Pc * g_CB) / (tSNR * g_dTB[d])) - (N0 / g_dTB[d]))
+            # Power of D2D transmitter for all RBs  (checking for all RB occupied by cell users)
+            P_dT = valid(P_dT)
+            #print(" A. Power that can be sent by d2d Txs", d, ": ", P_dT)
+            r = (1 + ((P_dT * g_dTdR) / (N0 + (Pc * g_CdR[d]))))
+            r_d2d = bw * np.log2(r)
+            # Rate achievable by D2D for all K s.
+            #print(" B. Rate achievable by D2D",d,": ", r_d2d)
+            #print("\n")
+
+            rates.append(list(r_d2d))
+        lambdas = []
+        for ratelist,Rd2d in zip(rates, d2dRwindow.get()):
+            lambdas.append(ratelist / Rd2d)
+        alloc = allocate_d2d(lambdas, 1)
+        d2dRates = [rates[x[1][0]][x[1][1]] for x in alloc]
+        d2dRwindow.update(d2dRates)
+        tempRateD2d.append(np.sum(d2dRates))
+    rateVariationCell.append(np.mean(tempRateCell))
+    rateVariationD2d.append(np.mean(tempRateD2d))
+
+pl.plot(rateVariationCell)
+pl.plot(rateVariationD2d)
+pl.show()

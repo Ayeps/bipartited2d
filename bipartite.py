@@ -9,7 +9,6 @@ def allocate_d2d(lambda_matrix,maximum_rb_allowed):
         for i in range(0,len(lambda_matrix)):
             for j in range(0,maximum_rb_allowed):
                 lambda_matrix_new.append(lambda_matrix[i])
-        print_matrix(lambda_matrix_new, msg='modified matrix:')
         lambda_matrix = lambda_matrix_new
 
     #convert profit matrix to cost matrix

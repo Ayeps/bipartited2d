@@ -8,12 +8,10 @@ def getGcbMatrix(Nc, ms, number_of_channels):
     d_CB = []      # Distance of CU from Base station
     for i in range(0, Nc):
         a = ms[i]
-        d = np.sqrt(a[0]**2 + a[1]**2)
-        d = d / 1000
-        d_CB.append(d)
+        d_CB.append(np.sqrt(a[0]**2 + a[1]**2) / 1000)
     pL_1 = 128.1 + 37.6 * np.log10(d_CB)   # Path loss in dB
     pl_1 = 10**(pL_1 / 10)   # Path loss in linear scale
-    for i in range(0, Nc):
+    for i in range(Nc):
         g_CB[i] = (g1[i]**2) / pl_1[i]
     return g_CB
 
@@ -27,10 +25,10 @@ def chGainsToRates(gains, Pc, bw, sigmaNsq):
     return rates
 
 # contact Shyamal
-def chGains(Nd, number_of_channels, cellUsers, allocated_cell_users, d2d_tx, d2d_rx, Pc):
+def chGains(Nd, number_of_channels, cellUsers, allocated_cell_users, d2d_tx, d2d_rx, Pc, d_dTdR):
     P=Pc         # tx power from CU
     d_dTB=[]     # distance of D2D Transmitter from Base station (1xNd)
-    d_dTdR=0.01  # distance between D2D Tx and D2D Rx
+    #d_dTdR=0.01  # distance between D2D Tx and D2D Rx
     d_CdR=[]     # distance between cell user and d2d receiver
 
     g_d2b = np.random.rayleigh(1,[Nd,number_of_channels])   # D2D Tx to BS rayleigh fading
@@ -43,8 +41,8 @@ def chGains(Nd, number_of_channels, cellUsers, allocated_cell_users, d2d_tx, d2d
     g_CdR = np.zeros([Nd,number_of_channels])
 
     for i in range(0,len(d2d_tx)):
-        distance =np.sqrt((d2d_tx[i][0]**2) + (d2d_tx[i][1]**2))
-        distance=distance/1000
+        distance = np.sqrt((d2d_tx[i][0]**2) + (d2d_tx[i][1]**2))
+        distance = distance / 1000
         d_dTB.append(distance)
 
     for i in range(0,len(d2d_rx)):
@@ -59,8 +57,8 @@ def chGains(Nd, number_of_channels, cellUsers, allocated_cell_users, d2d_tx, d2d
             dist.append(distance)
         d_CdR.append(dist)
 
-    pL_dTB=128.1 + 37.6*np.log10(d_dTB)  # d_dTB=distance in kms
-    pL_dTdR=128.1 + 37.6*np.log10(d_dTdR)
+    pL_dTB = 128.1 + 37.6*np.log10(d_dTB)  # d_dTB=distance in kms
+    pL_dTdR = 128.1 + 37.6*np.log10(d_dTdR / 1000)
 
     pL_CdR = np.zeros([Nd,number_of_channels])
     pl_CdR = np.zeros([Nd,number_of_channels])
