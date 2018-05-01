@@ -3,7 +3,7 @@
 #   Wireless & Mobile Communication
 #   Course Project
 #
-#   Plot of a Hexagonal Cell With Users 
+#   Plot of a Hexagonal Cell With Users
 #
 #   Authors: Pratik, Ritesh, Shyamal
 #
@@ -92,7 +92,6 @@ for i in range(0, Nd):
         pl.plot(xx, yy, color="#888888", zorder = 999, linewidth=1)
 
 brush.drawHex(0, 0, fig1, "#EEEEEE")
-#brush.drawTiers(0, (0, 0), fig1, "#EEEEEE")
 ax = fig1.gca()
 ax.set_xlim(-Rc, Rc)
 ax.set_ylim(-Rc, Rc)

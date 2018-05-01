@@ -62,9 +62,6 @@ g = cs.geom(Rc)
 
 cellUsers = [g.getRandomPointInHex() for i in range(Nc)]
 
-
 throughputCell, throughPutD2d = core.core(Rc, Pc, bw, N0, tSNR, cellUsers,
                                         Nc, Nd, Nrb, d2dDistance,
                                         rbPerD2DPair, RWindowSize, 400, True)
-
-pl.show()

@@ -1,7 +1,6 @@
 import numpy as np
 import random
 
-# contact Shyamal
 def getGcbMatrix(Nc, ms, number_of_channels):
     g1 = np.random.rayleigh(1, [Nc, number_of_channels])
     g_CB = np.zeros([Nc, number_of_channels])
@@ -15,7 +14,6 @@ def getGcbMatrix(Nc, ms, number_of_channels):
         g_CB[i] = (g1[i]**2) / pl_1[i]
     return g_CB
 
-# contact Ritesh
 def chGainsToRates(gains, Pc, bw, sigmaNsq):
     rates = []
     for gain in gains:
@@ -24,7 +22,6 @@ def chGainsToRates(gains, Pc, bw, sigmaNsq):
         rates.append(rate)
     return rates
 
-# contact Shyamal
 def chGains(Nd, number_of_channels, cellUsers, allocated_cell_users, d2d_tx, d2d_rx, Pc, d_dTdR):
     P=Pc         # tx power from CU
     d_dTB=[]     # distance of D2D Transmitter from Base station (1xNd)
