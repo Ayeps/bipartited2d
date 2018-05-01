@@ -8,7 +8,7 @@
 	"Nc" : 20,
 	"Nd" : 20,
 	"Nrb" : 25,
-	"RWindowSize" : 100,
+	"RWindowSize" : 50,
 	"d2dDistance" : 10,
 	"rbPerD2DPair" : 1
 }
