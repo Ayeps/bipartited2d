@@ -13,7 +13,7 @@ def valid(a):
             a[i] = 0
     return a
 
-def core(Rc, Pc, bw, N0, tSNR, cellUsers, Nc, Nd, Nrb, d2dDistance, rbPerD2DPair, RWindowSize, simTime):
+def core(Rc, Pc, bw, N0, tSNR, cellUsers, Nc, Nd, Nrb, d2dDistance, rbPerD2DPair, RWindowSize, simTime, barplot):
     g = cs.geom(Rc)
     d2d_tx = []
     d2d_rx = []
@@ -35,7 +35,7 @@ def core(Rc, Pc, bw, N0, tSNR, cellUsers, Nc, Nd, Nrb, d2dDistance, rbPerD2DPair
 
     for i in range(totalTime):
         gcB = channel.getGcbMatrix(Nc, cellUsers, Nrb)
-        alloc, allocRB, gcBs, rates, ratesRB = allocate.cellAllocate(Nc, Nrb, Pc, bw, N0, gcB, cellRwindow.get())
+        allocC, allocRB, gcBs, rates, ratesRB = allocate.cellAllocate(Nc, Nrb, Pc, bw, N0, gcB, cellRwindow.get())
         Rcell = cellRwindow.update(rates)
 
         tempRateCell.append(np.sum(rates))
@@ -67,23 +67,46 @@ def core(Rc, Pc, bw, N0, tSNR, cellUsers, Nc, Nd, Nrb, d2dDistance, rbPerD2DPair
                 if(x[1][1] == j):
                     d2dRatesRB[j] = rates[x[1][0]][x[1][1]]
 
-        """
-        if(i == 150):
-            ind = np.arange(Nrb)    # the x locations for the groups
-            width = 0.35       # the width of the bars: can also be len(x) sequence
-            pl.figure(1)
-            p1 = pl.bar(ind, ratesRB, width)
-            p2 = pl.bar(ind, d2dRatesRB, width, bottom = ratesRB)
-            pl.ylabel('Resource Blocks avaliable (RBs)')
-            pl.ylabel('Rate (Mbps)')
-            pl.title('Rate allocation for a LTE frame')
-            #plt.xticks(ind, ('RB1', 'RB2', 'RB3', 'RB4', 'RB5'))
-            #plt.yticks(np.arange(0, 50,5))
-            pl.legend((p1[0], p2[0]), ('Cellular user', 'D2D user'))
-            pl.show()
-            break
-        """
+        if(barplot):
+            if(i == 150):
+                ind = np.arange(Nrb) # the x locations for the groups
+                width = 0.35 # the width of the bars: can also be len(x) sequence
+                barfig = pl.figure(1)
+                pl.grid(True, color="#DDDDDD")
+                ax = barfig.gca()
+                ax.set_axisbelow(True)
+                p1 = pl.bar(ind, np.asarray(ratesRB) / 1e6, width)
+                p2 = pl.bar(ind, np.asarray(d2dRatesRB) / 1e6, width, bottom = np.asarray(ratesRB) / 1e6)
+                #pl.title('Rate Allocation in One LTE frame')
+                pl.xlabel("Resource Blocks")
+                pl.ylabel("Rate (Mbits/s)")
+                pl.xticks(ind, [(x + 1) for x in range(Nrb)])
+                pl.yticks(np.arange(0, 8, 1))
+                pl.legend((p1[0], p2[0]), ('Cellular User', 'D2D Pair'))
 
+                brush = cs.draw(np.sqrt(2) / 10)
+                figAlloc = pl.figure(2)
+                pl.xlabel("Resource Blocks -->")
+                pl.ylabel("Cell Users -->")
+                ax = figAlloc.gca()
+                ax.set_xlim(0, (Nrb + 1) * 0.22)
+                ax.set_ylim(0, (Nc + 1) * 0.22)
+                ax.set_aspect('equal')
+                ax.set_yticklabels([])
+                ax.set_xticklabels([])
+                x = 0
+                y = 0.2
+                for ms  in allocC:
+                    for i in range(Nrb):
+                        x += 0.22
+                        if(i in ms):
+                            brush.drawSquare(x, y, figAlloc, "#009999")
+                        else:
+                            brush.drawSquare(x, y, figAlloc, "#E7E7E7")
+                    x = 0
+                    y += 0.22
+                pl.show()
+                break
         d2dRwindow.update(d2dRates)
         tempRateD2d.append(np.sum(d2dRates))
     return np.mean(tempRateCell), np.mean(tempRateD2d)

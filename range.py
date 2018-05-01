@@ -80,7 +80,7 @@ for d2dDistance in distanceVariation:
     sys.stdout.flush()
     throughputCell, throughPutD2d = core.core(Rc, Pc, bw, N0, tSNR, cellUsers,
                                             Nc, Nd, Nrb, d2dDistance,
-                                            rbPerD2DPair, RWindowSize, 200)
+                                            rbPerD2DPair, RWindowSize, 200, False)
     rateVariationCell.append(throughputCell)
     rateVariationD2d.append(throughPutD2d)
     rateVariationBoth.append(throughputCell + throughPutD2d)

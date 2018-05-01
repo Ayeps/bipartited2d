@@ -3,7 +3,7 @@
 #   Wireless & Mobile Communication
 #   Course Project
 #
-#   Variation of Throughput With No. of D2D Users
+#   Plot of a Hexagonal Cell With Users 
 #
 #   Authors: Pratik, Ritesh, Shyamal
 #
