@@ -68,10 +68,33 @@ def core(Rc, Pc, bw, N0, tSNR, cellUsers, Nc, Nd, Nrb, d2dDistance, rbPerD2DPair
                     d2dRatesRB[j] = rates[x[1][0]][x[1][1]]
 
         if(barplot):
-            if(i == 150):
+            if(i == 0):
+                brush = cs.draw(0.1)
+                bfig = pl.figure(2)
+                ax = bfig.gca()
+                pl.xlabel("Resource Blocks")
+                pl.ylabel("Cell Users")
+                ax.set_xlim(0, (Nrb + 1) * 0.2)
+                ax.set_ylim(0, (Nc + 1) * 0.2)
+                ax.set_aspect('equal')
+                ax.set_yticklabels([])
+                ax.set_xticklabels([])
+                x = 0
+                y = 0.2
+                for ms  in allocC:
+                    for i in range(Nrb):
+                        x += 0.2
+                        if(i in ms):
+                            brush.drawSquare(x, y, bfig, "#0057E7")
+                        else:
+                            brush.drawSquare(x, y, bfig, "#F7F7F7")
+                    x = 0
+                    y += 0.2
+                pl.savefig('onlycell.eps', transparent=True)
+
                 ind = np.arange(Nrb) # the x locations for the groups
                 width = 0.35 # the width of the bars: can also be len(x) sequence
-                barfig = pl.figure(1)
+                barfig = pl.figure(3)
                 pl.grid(True, color="#DDDDDD")
                 ax = barfig.gca()
                 ax.set_axisbelow(True)
@@ -83,11 +106,11 @@ def core(Rc, Pc, bw, N0, tSNR, cellUsers, Nc, Nd, Nrb, d2dDistance, rbPerD2DPair
                 pl.xticks(ind, [(x + 1) for x in range(Nrb)])
                 pl.yticks(np.arange(0, 8, 1))
                 pl.legend((p1[0], p2[0]), ('Cellular User', 'D2D Pair'))
+                pl.savefig('bar.eps', transparent=True)
 
-                brush = cs.draw(0.1)
-                figAlloc = pl.figure(2)
-                pl.xlabel("Resource Blocks -->")
-                pl.ylabel("Cell Users -->")
+                figAlloc = pl.figure(4)
+                pl.xlabel("Resource Blocks")
+                pl.ylabel("Cell Users")
                 ax = figAlloc.gca()
                 ax.set_xlim(0, (Nrb + 1) * 0.2)
                 ax.set_ylim(0, (Nc + 1) * 0.2)
@@ -108,9 +131,10 @@ def core(Rc, Pc, bw, N0, tSNR, cellUsers, Nc, Nd, Nrb, d2dDistance, rbPerD2DPair
                                     square_length = 0.1 * np.sqrt(2)
                                     ax.fill([x_start, (x_start + square_length), (x_start + square_length), x_start], [y_start, y_start, (y_start + square_length), y_start],"#E56A6D")
                         else:
-                            brush.drawSquare(x, y, figAlloc, "#E7E7E7")
+                            brush.drawSquare(x, y, figAlloc, "#F7F7F7")
                     x = 0
                     y += 0.2
+                pl.savefig('cellnd2d.eps', transparent=True)
                 pl.show()
                 break
         d2dRwindow.update(d2dRates)
