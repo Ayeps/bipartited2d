@@ -2,6 +2,6 @@ IITB
 EE764 Wireless & Mobile Communication Project
 2018
 
-An implementation of the algorithm from the paper:
+An implementation based on the following paper:
 
 I. Mondal, A. Neogi, P. Chaporkar and A. Karandikar, "Bipartite Graph Based Proportional Fair Resource Allocation for D2D Communication," 2017 IEEE Wireless Communications and Networking Conference (WCNC), San Francisco, CA, 2017, pp. 1-6.
